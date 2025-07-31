@@ -27,13 +27,14 @@ router.get('/', async (req, res) => {
         const { name } = req.query;
         
         const filter = {};
-        if (name) filter.name = name;
+        if (name) filter.name = {$regex: name, $options: 'i'};
 
         const games = await Game.find(filter);
         
         res.json(games.map(g => ({...g._doc, id: g._id})));
 
     } catch(err) {
+        console.error('GET /games error:', err.message);
         res.status(500).json({error: 'Failed to fetch games'});
     }    
 });

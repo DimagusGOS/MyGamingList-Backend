@@ -11,6 +11,8 @@ mongoose.connect(process.env.MONGODB_URI)
             {name: "Hollow Knight", genres: ["platform", "metroidvania", "souls-like"], platform:["xbox", "playstation", "PC", "Nintendo Switch"], review: 4.5},
             {name: "Octopath Traveler", genres: ["JRPG", "Turn-based", "Role-playing"], platform:["xbox", "playstation", "PC", "Nintendo Switch"], review: 4.6},
             {name: "Minecraft", genres: ["Sandbox", "Builder"], platform:["xbox", "playstation", "PC", "Nintendo Switch"], review: 4.1},
+            {name: "Octopath Traveler 2", genres: ["JRPG", "Turn-based", "Role-playing"], platform:["xbox", "playstation", "PC", "Nintendo Switch"], review: 4.3},
+            {name: "Minecraft Dungeons", genres: ["Dungeon Crawler", "Adventure"], platform:["xbox", "playstation", "PC", "Nintendo Switch"], review: 3.9},
         ]);
     })
     .then(() => { 
