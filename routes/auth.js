@@ -2,14 +2,18 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+require('dotenv').config();
+
+
 
 const router = express.Router();
 
-const JWT_Secret = process.env.JWT_Secret;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 //Signup
 router.post('/signup', async (req, res) => {
     try{
+        console.log(JWT_SECRET);
         const {username, email, password} = req.body;
 
         const existingUser = await User.findOne( {$or: [{username}, {email}]
@@ -22,11 +26,11 @@ router.post('/signup', async (req, res) => {
         const newUser = new User({username, email, passwordHash});
         await newUser.save();
 
-        const token = jwt.sign({userId: newUser._id}, JWT_Secret);
+        const token = jwt.sign({userId: newUser._id}, JWT_SECRET);
         res.json({token});
     } catch (err) {
-        console.error(err);
-        res.status(500).json({error: 'Signup failed'});
+        console.error('Signup Error:', err.message, err.stack);
+        res.status(500).json({ error: 'Signup failed' });
     }
 });
 
@@ -41,7 +45,7 @@ router.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) return res.status(401).json({error: 'Invalid credentials'});
 
-        const token = jwt.sign({userId: user._id}, JWT_Secret);
+        const token = jwt.sign({userId: user._id}, JWT_SECRET);
         res.json({token});
     }catch (err) {
         console.error(err);
@@ -55,7 +59,7 @@ router.get('/me', async (req, res) => {
     if (!token) return res.status(401).json({error: 'Missing token'});
 
     try {
-        const decoded = jwt.verify(token, JWT_Secret);
+        const decoded = jwt.verify(token, JWT_SECRET);
         const user = await User.findById(decoded.userId).select('username email createdAt');
         res.json(user);
     } catch {

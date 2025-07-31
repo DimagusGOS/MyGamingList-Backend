@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const gamesRouter = require('./routes/games');
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth.js');
 
 dotenv.config();
@@ -13,7 +13,10 @@ mongoose
     .catch((err) => console.error("MongoDB connection error:", err));
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // or 3000 if you're using CRA
+    credentials: true
+}));
 app.use(express.json());
 app.use('/games', gamesRouter);
 app.use('/api/auth', authRoutes);
