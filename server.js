@@ -3,6 +3,7 @@ const cors = require('cors');
 const gamesRouter = require('./routes/games');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const authRoutes = require('./routes/auth.js');
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/games', gamesRouter);
+app.use('/api/auth', authRoutes);
 app.listen(4000, () => {
     console.log('REST API running at http://localhost:4000');
 });

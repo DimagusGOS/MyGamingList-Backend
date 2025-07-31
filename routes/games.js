@@ -3,6 +3,8 @@ const { body, validationResult } = require('express-validator');
 const rateLimit = require('express-rate-limit');
 let games = require('../data/games');
 const Game = require('../models/Game');
+const {verifyToken} = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -38,8 +40,8 @@ router.get('/', async (req, res) => {
 
 
 
-// GET /flights/1
-router.get('/:id', async (req, res) => {
+// GET /games/1
+router.get('/:id', verifyToken, async (req, res) => {
     try {
         const g = await Game.findById(req.params.id);
         g ? res.json({...g._doc, id: g._id}) :
