@@ -1,0 +1,9 @@
+[
+    {
+        "id": 1,
+        "name": "Hollow Knight",
+        "genres": ["platform", "metroidvania", "souls-like"],
+        "platform": ["xbox", "playstation", "PC", "Nintendo Switch"],
+        "reviews": 5.0 
+    }
+]
