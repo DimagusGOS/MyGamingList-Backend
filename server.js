@@ -14,12 +14,13 @@ mongoose
 
 const app = express();
 app.use(cors({
-    origin: 'http://localhost:5173', // or 3000 if you're using CRA
+    // origin: 'http://localhost:5173', // local origin
+    origin: 'http://localhost:5173', // render origin
     credentials: true
 }));
 app.use(express.json());
 app.use('/games', gamesRouter);
 app.use('/api/auth', authRoutes);
-app.listen(4000, () => {
+app.listen(process.env.PORT || 4000, () => {
     console.log('REST API running at http://localhost:4000');
 });
