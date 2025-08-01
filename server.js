@@ -15,7 +15,7 @@ mongoose
 const app = express();
 app.use(cors({
     // origin: 'http://localhost:5173', // local origin
-    origin: 'https://my-gaming-list-tau.vercel.app/', // render origin
+    origin: 'https://my-gaming-list-tau.vercel.app', // render origin
     credentials: true
 }));
 app.use(express.json());
