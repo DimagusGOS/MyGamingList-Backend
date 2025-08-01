@@ -1,12 +1,14 @@
 const express = require('express');
-const { body, validationResult } = require('express-validator');
 const rateLimit = require('express-rate-limit');
-let games = require('../data/games');
 const Game = require('../models/Game');
 const {verifyToken} = require('../middleware/auth');
 
+require('dotenv').config();
 
 const router = express.Router();
+
+const RAWG_API_KEY = process.env.RAWG_API_KEY;
+const USE_LOCAL_DB = process.env.USE_LOCAL_DB === 'true'; // toggle this in .env
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -25,14 +27,44 @@ router.use(limiter);
 router.get('/', async (req, res) => {
     try {
         const { name } = req.query;
+        if (!name) return res.status(400).json({ error: 'Missing game name' });
         
-        const filter = {};
-        if (name) filter.name = {$regex: name, $options: 'i'};
+        // 🔌 If demo mode: try local DB
+        if (USE_LOCAL_DB) {
+            const games = await Game.find({ name: { $regex: name, $options: 'i' } });
+            if (games.length > 0) {
+                return res.json(games.map(g => ({ ...g._doc, id: g._id })));
+            }
+        }
 
-        const games = await Game.find(filter);
+        // 🌐 Fetch from RAWG
+        const rawgUrl = `https://api.rawg.io/api/games?search=${name}&key=${RAWG_API_KEY}`;
+        const rawgRes = await fetch(`${rawgUrl}`);
+        const rawgData = await rawgRes.json();
+
+        if (!rawgData.results || rawgData.results.length === 0) {
+            return res.status(404).json({ error: 'No games found from RAWG' });
+        }
+
+        // console.log(rawgData);
+
+        // Format the result for frontend
+        const games = rawgData.results.map(game => ({
+            id: game.id,
+            name: game.name,
+            description: game.slug,
+            image: game.background_image,
+            released: game.released,
+            rating: game.rating,
+            genres: game.genres.map(g => g.name),
+            platforms: game.platforms.map(g => g.platform.name),
+        }));
+
+        console.log(games);
+
+        return res.json(games);
+
         
-        res.json(games.map(g => ({...g._doc, id: g._id})));
-
     } catch(err) {
         console.error('GET /games error:', err.message);
         res.status(500).json({error: 'Failed to fetch games'});
